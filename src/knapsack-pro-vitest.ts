@@ -10,20 +10,20 @@ import {
 } from '@knapsack-pro/core';
 import { EnvConfig } from './env-config';
 import { TestFilesFinder } from './test-files-finder';
-import { JestCLI } from './jest-cli';
+import { VitestCLI } from './vitest-cli';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const jest = require('jest');
+const vitest = require('vitest');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { v4: uuidv4 } = require('uuid');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { name: clientName, version: clientVersion } = require('../package.json');
 
-const jestCLIOptions = JestCLI.argvToOptions();
+const vitestCLIOptions = VitestCLI.argvToOptions();
 const knapsackProLogger = new KnapsackProLogger();
 knapsackProLogger.debug(
-  `Jest CLI options:\n${KnapsackProLogger.objectInspect(jestCLIOptions)}`,
+  `Vitest CLI options:\n${KnapsackProLogger.objectInspect(vitestCLIOptions)}`,
 );
 
 EnvConfig.loadEnvironmentVariables();
@@ -42,16 +42,16 @@ const onSuccess: onQueueSuccessType = async (queueTestFiles: TestFile[]) => {
     (testFile: TestFile) => testFile.path,
   );
 
-  const jestCLICoverage = EnvConfig.coverageDirectory
+  const vitestCLICoverage = EnvConfig.coverageDirectory
     ? { coverageDirectory: `${EnvConfig.coverageDirectory}/${uuidv4()}` }
     : {};
 
   const {
     results: { success: isTestSuiteGreen, testResults },
-  } = await jest.runCLI(
+  } = await vitest.runCLI(
     {
-      ...jestCLIOptions,
-      ...jestCLICoverage,
+      ...vitestCLIOptions,
+      ...vitestCLICoverage,
       runTestsByPath: true,
       _: testFilePaths,
     },
